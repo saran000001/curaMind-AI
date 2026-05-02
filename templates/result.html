@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-panel" style="max-width: 700px;">
+    <h2>Diagnostic Report</h2>
+    <p class="subtitle">AI-generated preliminary analysis</p>
+    
+    <div id="userInfo" style="display: none; text-align: center; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 8px;">
+        Patient: <span id="displayName" style="color: var(--primary); font-weight: bold;"></span> | 
+        ID: <span id="displayPatientId" style="color: var(--primary); font-weight: bold;"></span>
+    </div>
+
+    <div class="result-card" id="resultCard" style="display: none;">
+        <div class="result-item">
+            <h3>Possible Diagnosis</h3>
+            <p id="resDiagnosis" style="color: var(--primary);">-</p>
+        </div>
+        <div class="result-item">
+            <h3>AI Confidence Score</h3>
+            <p id="resConfidence">-</p>
+            <div class="confidence-bar">
+                <div class="confidence-fill" id="resConfidenceBar"></div>
+            </div>
+        </div>
+        <div class="result-item">
+            <h3>Recommendation</h3>
+            <p id="resRecommendation" style="font-size: 1rem; color: var(--text-main);">-</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="/symptoms" class="btn" style="text-decoration: none; display: inline-block; width: auto; padding: 0.8rem 2rem;">Run Another Check</a>
+    </div>
+</div>
+{% endblock %}
