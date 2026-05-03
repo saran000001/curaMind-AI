@@ -1,9 +1,3 @@
--- ============================================================
---  CuraMind AI — HIPAA-Compliant Telehealth & Diagnostics
---  Supabase PostgreSQL Schema
--- ============================================================
-
--- STEP 1: ENUM TYPES (PostgreSQL uses custom types for ENUMs)
 CREATE TYPE user_role     AS ENUM ('patient', 'doctor');
 CREATE TYPE gender_type   AS ENUM ('male', 'female', 'other');
 CREATE TYPE review_status AS ENUM ('pending', 'approved', 'rejected');
@@ -86,9 +80,6 @@ CREATE INDEX idx_diagnosis_patient ON diagnosis(patient_id);
 CREATE INDEX idx_diagnosis_doctor  ON diagnosis(doctor_id);
 CREATE INDEX idx_diagnosis_review  ON diagnosis(doctor_review);
 
--- ============================================================
---  AUTO UPDATE: updated_at trigger for diagnosis & login
--- ============================================================
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -106,22 +97,22 @@ CREATE TRIGGER trg_login_updated
   FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 
 -- ============================================================
---  SAMPLE DATA (for testing — delete before production)
+--  SAMPLE DATA
 -- ============================================================
 
 INSERT INTO doctor (name, specialization, email, password_hash)
-VALUES ('Dr. Aisha Mehta', 'General Medicine',
+VALUES ('Dr. Sarvesh', 'General Medicine',
         'aisha.mehta@curamind.ai',
         '$2b$12$samplehashedpasswordhere');
 
 INSERT INTO patient (name, age, gender, email, password_hash, phone)
-VALUES ('Rahul Sharma', 28, 'male',
-        'rahul.sharma@gmail.com',
+VALUES ('Saran', 20, 'male',
+        'saran9@gmail.com',
         '$2b$12$samplehashedpasswordhere',
         '+91 98765 43210');
 
 INSERT INTO login (email, password_hash, role)
-VALUES ('rahul.sharma@gmail.com',
+VALUES ('saran9@gmail.com',
         '$2b$12$samplehashedpasswordhere',
         'patient');
 
