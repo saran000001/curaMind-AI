@@ -1,0 +1,15 @@
+# Environment variables (NEVER push these)
+.env
+.env.local
+.env.production
+
+# Supabase local config
+.supabase/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
