@@ -130,3 +130,87 @@ VALUES (1, TRUE, TRUE, FALSE, TRUE, FALSE, CURRENT_DATE);
 
 INSERT INTO diagnosis (patient_id, doctor_id, predicted_disease, confidence, doctor_review, date)
 VALUES (1, 1, 'Viral Upper Respiratory Infection', 87.50, 'pending', CURRENT_DATE);
+
+-- ============================================================
+--  CuraMind AI — Critical Database Enhancements
+-- ============================================================
+
+-- ============================================================
+--  CHANGE 1: Add More Symptoms Columns
+-- ============================================================
+ALTER TABLE symptoms
+ADD COLUMN shortness_of_breath  BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN sore_throat          BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN nausea               BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN vomiting             BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN body_ache            BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN loss_of_smell        BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN loss_of_taste        BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- ============================================================
+--  CHANGE 2: Audit Log Table
+-- ============================================================
+CREATE TABLE audit_log (
+  log_id        SERIAL        PRIMARY KEY,
+  table_name    VARCHAR(100)  NOT NULL,
+  action        VARCHAR(10)   NOT NULL,
+  performed_by  VARCHAR(255)  NOT NULL,
+  old_data      JSONB,
+  new_data      JSONB,
+  performed_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+-- Enable RLS on audit log
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+-- Only doctors can view audit log
+CREATE POLICY "Doctor can view audit log"
+  ON audit_log FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM doctor
+      WHERE doctor.email = auth.email()
+    )
+  );
+
+-- Only service role can insert into audit log
+CREATE POLICY "Service role can insert audit log"
+  ON audit_log FOR INSERT
+  WITH CHECK (auth.role() = 'service_role');
+
+-- ============================================================
+--  CHANGE 3: Views for Easy Data Reading
+-- ============================================================
+
+-- Patient diagnosis view
+CREATE VIEW patient_diagnosis_view AS
+SELECT
+  p.name              AS patient_name,
+  p.age,
+  p.gender,
+  d.predicted_disease,
+  d.confidence,
+  d.doctor_review,
+  d.date
+FROM patient p
+JOIN diagnosis d ON p.patient_id = d.patient_id;
+
+-- Patient symptoms view
+CREATE VIEW patient_symptoms_view AS
+SELECT
+  p.name                    AS patient_name,
+  s.fever,
+  s.cough,
+  s.headache,
+  s.fatigue,
+  s.chest_pain,
+  s.shortness_of_breath,
+  s.sore_throat,
+  s.nausea,
+  s.vomiting,
+  s.body_ache,
+  s.loss_of_smell,
+  s.loss_of_taste,
+  s.date
+FROM patient p
+JOIN symptoms s ON p.patient_id = s.patient_id;
